@@ -1,4 +1,4 @@
-package PL2_optimización
+package PL2_optimizacion
 
 object optimizacion {
   //hola
