@@ -29,7 +29,9 @@ object optimizacion {
     println("Tablero inicial: ")
     imprimir_tablero(tableroLleno)
     //Se inicia el juego
-    jugar(tableroLleno, 0)
+    //jugar(tableroLleno, 0) 
+    println(estrategia(tableroLleno, colores,0,0,0,' '))
+    //println("salsdhoaoidpfia")
      
          
     }
@@ -413,12 +415,12 @@ object optimizacion {
           }
           else //si la bola de la derecha de la bola comprobada anterioremente no es del mismo color
           {
-            lista_nueva //devolvemos la lista donde unicamente añadimos la posicion de la primera bola comprobada en esta iteración (bola de abajo)
+            lista_nueva //devolvemos la lista donde unicamente aï¿½adimos la posicion de la primera bola comprobada en esta iteraciï¿½n (bola de abajo)
           }
         }
         else // si la bola de abajo no es del mismo color
         {
-          lista //devolvemos la lista sin añadir nada mas
+          lista //devolvemos la lista sin aï¿½adir nada mas
         }
       }
       else //si fila y columna no estan en el rango
@@ -773,6 +775,121 @@ object optimizacion {
      
   }
  
+  def mejor_movimiento_tablero(fila: Int, columna: Int, color: Char, tablero: List[List[Char]], mejorFila: Int, mejorColumna: Int, tamano: Int ): List[Int] = 
+  { //
+    println("SOY CONCHA ENTRO")
+    if(columna < 8)
+    {
+      
+      val columna_aux = columna +1
+      println("COL: "+ columna_aux)
+      val consecutivasCol = get_bolas_columna(fila,columna_aux,color,tablero,Nil) //obtenemos las bolas consecutivas que forman una columna a partir de la posicion indicada
+      val consecutivasFila =  get_bolas_fila(fila, columna_aux, color, tablero, Nil) //obtenemos las bolas consecutivas que forman una fila a partir de la posicion indicada
+      val consecutivasDiagonal = get_bolas_diagonal(fila, columna_aux, color, tablero, Nil) //obtenemos las bolas consecutivas que forman una diagonal a partir de la posicion indicada
+      val mejor_lista= comparador_listas(consecutivasCol, consecutivasFila, consecutivasDiagonal)
+      val mejor_tamano = mejor_lista.length
+      if(mejor_tamano > tamano)
+      {
+         mejor_movimiento_tablero(fila, columna_aux, color, tablero, fila, columna_aux, mejor_tamano)
+      
+      }
+      else
+      {
+         mejor_movimiento_tablero(fila, columna_aux, color, tablero, fila, columna, tamano)
+      }
+    }
+    else
+    {
+      if(fila<8)
+      {
+        println("FILA: "+ fila)
+        val fila_aux = fila+1
+        val consecutivasCol = get_bolas_columna(fila_aux,0,color,tablero,Nil) //obtenemos las bolas consecutivas que forman una columna a partir de la posicion indicada
+        val consecutivasFila =  get_bolas_fila(fila_aux,0, color, tablero, Nil) //obtenemos las bolas consecutivas que forman una fila a partir de la posicion indicada
+        val consecutivasDiagonal = get_bolas_diagonal(fila_aux, 0, color, tablero, Nil) //obtenemos las bolas consecutivas que forman una diagonal a partir de la posicion indicada
+        val mejor_lista= comparador_listas(consecutivasCol, consecutivasFila, consecutivasDiagonal)
+        val mejor_tamano = mejor_lista.length
+        if(mejor_tamano > tamano)
+        {
+          mejor_movimiento_tablero(fila_aux, -1, color, tablero, fila_aux, 0, mejor_tamano)
+        }
+        else
+        {
+         mejor_movimiento_tablero(fila, -1, color, tablero, fila, columna, tamano)
+        }
+      }
+      else
+      {
+        val kaka = List(fila,columna,tamano) //QUITARRRRRRRR--------
+        print(kaka)
+        kaka
+      }
+    }
+
+  }
+  
+   def estrategia(tablero: List[List[Char]], lista_colores: List[Char],fila: Int, columna: Int, tamano: Int, color: Char ): List[Any]=
+  {
+     if(!lista_colores.isEmpty)
+     {
+       println("FILA: "+fila)
+       println("COLUMNA: "+columna)
+       println("COLOR: "+color)
+       val nuevo_color = lista_colores.head
+       val lista = mejor_movimiento_tablero(0, -1, nuevo_color, tablero, 0, 0, 0)
+       val mejor_fila = lista(0)
+       val mejor_columna = lista(1)
+       val tam = lista(2)
+       if(tam > tamano)
+       {
+         estrategia(tablero, lista_colores.tail, mejor_fila, mejor_columna, tam, nuevo_color)
+       }
+       else
+       {
+         estrategia(tablero, lista_colores.tail, fila, columna, tamano, color)
+       }
+     }
+     else
+     {
+       List(fila, columna, color)
+     }
+
+  }
+  
+  def comparador_listas(lista1: List[List[Int]], lista2: List[List[Int]],lista3: List[List[Int]]): List[List[Int]] = //compara la longitud de 3 listas y devuelve la mas grande
+  {
+    if(lista1.length > lista2.length)
+    {
+      if(lista1.length > lista3.length)
+      {
+        lista1 //1 es la mas grande
+      }
+      else //si la 3 es mas grande que la 1
+      {
+        if(lista3.length > lista2.length) //la 3 es la mas grande
+        {
+          lista3
+        }
+        else
+        {
+          lista1
+        }
+      }
+    } //la 2 es mas grande que la 1
+    else
+    {
+      if(lista2.length > lista3.length) //si la dos tambien es mas grande que la 3
+      {
+        lista2
+      }
+      else
+      {
+        lista3
+      }
+    }
+  }
+
+  
   def get_puntos(fila: Int, columna: Int, color: Char, tablero: List[List[Char]]): Int =
   { //obtiene los puntos en funcion de las bolas eliminadas
      val consecutivasCol = get_bolas_columna(fila,columna,color,tablero,Nil) //obtenemos las bolas consecutivas que forman una columna a partir de la posicion indicada
