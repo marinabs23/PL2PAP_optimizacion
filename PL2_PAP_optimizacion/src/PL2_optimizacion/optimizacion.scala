@@ -777,12 +777,11 @@ object optimizacion {
  
   def mejor_movimiento_tablero(fila: Int, columna: Int, color: Char, tablero: List[List[Char]], mejorFila: Int, mejorColumna: Int, tamano: Int ): List[Int] = 
   { //
-    println("SOY CONCHA ENTRO")
+
     if(columna < 8)
     {
       
       val columna_aux = columna +1
-      println("COL: "+ columna_aux)
       val consecutivasCol = get_bolas_columna(fila,columna_aux,color,tablero,Nil) //obtenemos las bolas consecutivas que forman una columna a partir de la posicion indicada
       val consecutivasFila =  get_bolas_fila(fila, columna_aux, color, tablero, Nil) //obtenemos las bolas consecutivas que forman una fila a partir de la posicion indicada
       val consecutivasDiagonal = get_bolas_diagonal(fila, columna_aux, color, tablero, Nil) //obtenemos las bolas consecutivas que forman una diagonal a partir de la posicion indicada
@@ -802,7 +801,6 @@ object optimizacion {
     {
       if(fila<8)
       {
-        println("FILA: "+ fila)
         val fila_aux = fila+1
         val consecutivasCol = get_bolas_columna(fila_aux,0,color,tablero,Nil) //obtenemos las bolas consecutivas que forman una columna a partir de la posicion indicada
         val consecutivasFila =  get_bolas_fila(fila_aux,0, color, tablero, Nil) //obtenemos las bolas consecutivas que forman una fila a partir de la posicion indicada
@@ -815,7 +813,7 @@ object optimizacion {
         }
         else
         {
-         mejor_movimiento_tablero(fila, -1, color, tablero, fila, columna, tamano)
+         mejor_movimiento_tablero(fila_aux, -1, color, tablero, fila, columna, tamano)
         }
       }
       else
