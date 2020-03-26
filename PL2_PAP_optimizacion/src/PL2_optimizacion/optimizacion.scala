@@ -29,8 +29,10 @@ object optimizacion {
     println("Tablero inicial: ")
     imprimir_tablero(tableroLleno)
     //Se inicia el juego
-    //jugar(tableroLleno, 0) 
-    println(estrategia(tableroLleno, colores,0,0,0,' '))
+    jugar(tableroLleno, 0) 
+    
+   
+    
     //println("salsdhoaoidpfia")
      
          
@@ -116,8 +118,18 @@ object optimizacion {
   //Nicol
   def jugar(tablero: List[List[Char]], puntos: Int): List[List[Char]] =
   {
+    
+    
     if(esMiembro(tablero, 'O')) //Si quedan huecos libres
     { //Continua la partida
+     val mov_recomendado: List[Any] = estrategia(tablero,colores,0,0,0,' ')
+     val a = mov_recomendado(2).toString.toInt.toChar
+     
+     
+     println("Se recomienda mover a la fila "+ mov_recomendado(0)+" columna "+mov_recomendado(1)+" una bola de color "+ a)
+     
+     
+ 
      val pos = elegirBola(tablero)
      val fila = pos(0)
      val columna = pos(1)
@@ -778,6 +790,7 @@ object optimizacion {
   def mejor_movimiento_tablero(fila: Int, columna: Int, color: Char, tablero: List[List[Char]], mejorFila: Int, mejorColumna: Int, tamano: Int ): List[Int] = 
   { //
 
+
     if(columna < 8)
     {
       
@@ -785,16 +798,20 @@ object optimizacion {
       val consecutivasCol = get_bolas_columna(fila,columna_aux,color,tablero,Nil) //obtenemos las bolas consecutivas que forman una columna a partir de la posicion indicada
       val consecutivasFila =  get_bolas_fila(fila, columna_aux, color, tablero, Nil) //obtenemos las bolas consecutivas que forman una fila a partir de la posicion indicada
       val consecutivasDiagonal = get_bolas_diagonal(fila, columna_aux, color, tablero, Nil) //obtenemos las bolas consecutivas que forman una diagonal a partir de la posicion indicada
+      
+
+      
       val mejor_lista= comparador_listas(consecutivasCol, consecutivasFila, consecutivasDiagonal)
       val mejor_tamano = mejor_lista.length
       if(mejor_tamano > tamano)
       {
+         
          mejor_movimiento_tablero(fila, columna_aux, color, tablero, fila, columna_aux, mejor_tamano)
       
       }
       else
       {
-         mejor_movimiento_tablero(fila, columna_aux, color, tablero, fila, columna, tamano)
+         mejor_movimiento_tablero(fila, columna_aux, color, tablero, mejorFila, mejorColumna, tamano)
       }
     }
     else
@@ -813,14 +830,13 @@ object optimizacion {
         }
         else
         {
-         mejor_movimiento_tablero(fila_aux, -1, color, tablero, fila, columna, tamano)
+         mejor_movimiento_tablero(fila_aux, -1, color, tablero, mejorFila, mejorColumna, tamano)
         }
       }
       else
       {
-        val kaka = List(fila,columna,tamano) //QUITARRRRRRRR--------
-        print(kaka)
-        kaka
+       List(mejorFila,mejorColumna,tamano) 
+      
       }
     }
 
@@ -830,9 +846,7 @@ object optimizacion {
   {
      if(!lista_colores.isEmpty)
      {
-       println("FILA: "+fila)
-       println("COLUMNA: "+columna)
-       println("COLOR: "+color)
+     
        val nuevo_color = lista_colores.head
        val lista = mejor_movimiento_tablero(0, -1, nuevo_color, tablero, 0, 0, 0)
        val mejor_fila = lista(0)
@@ -856,6 +870,7 @@ object optimizacion {
   
   def comparador_listas(lista1: List[List[Int]], lista2: List[List[Int]],lista3: List[List[Int]]): List[List[Int]] = //compara la longitud de 3 listas y devuelve la mas grande
   {
+    
     if(lista1.length > lista2.length)
     {
       if(lista1.length > lista3.length)
