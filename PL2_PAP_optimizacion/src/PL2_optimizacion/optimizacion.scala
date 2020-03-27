@@ -31,11 +31,6 @@ object optimizacion {
     imprimir_tablero(tableroLleno)
     //Se inicia el juego
     jugar(tableroLleno, 0) 
-    
-   
-    
-    //println("salsdhoaoidpfia")
-     
          
     }
   
@@ -739,6 +734,26 @@ object optimizacion {
 
 
      } 
+  //marina
+  def pos_en_linea(linea: List[List[Int]], pos: List[Int]): Boolean = //comprueba si una posicion corresponde a una linea
+  {
+    if(!linea.isEmpty)
+    {
+      val item = linea.head
+      if(item == pos) //si el el primer elemento coincide con elem
+      {
+         true
+      }
+      else
+      {
+        pos_en_linea(linea.tail, pos) //comprueba la cola
+      }
+      
+    }else
+    {
+      false
+    }
+  }
      
   //NICOL
   def eliminar_bolas(lista: List[List[Int]],tablero: List[List[Char]]): List[List[Char]] =
@@ -794,20 +809,16 @@ object optimizacion {
 
     if(columna < 8) //mientras que queden columnas de una fila por mirar
     {
-      
       val columna_aux = columna +1 //se mira la siguiente columna
       val consecutivasCol = get_bolas_columna(fila,columna_aux,color,tablero,Nil) //obtenemos las bolas consecutivas que forman una columna a partir de la posicion indicada
       val consecutivasFila =  get_bolas_fila(fila, columna_aux, color, tablero, Nil) //obtenemos las bolas consecutivas que forman una fila a partir de la posicion indicada
       val consecutivasDiagonal = get_bolas_diagonal(fila, columna_aux, color, tablero, Nil) //obtenemos las bolas consecutivas que forman una diagonal a partir de la posicion indicada
-      
-
-      
+       
       val mejor_lista= comparador_listas(consecutivasCol, consecutivasFila, consecutivasDiagonal)
       val mejor_tamano = mejor_lista.length
       if(mejor_tamano > tamano) //si esta nueva posicion es mejor
       {
-         
-         mejor_movimiento_tablero(fila, columna_aux, color, tablero, fila, columna_aux, mejor_tamano) //llamada recursiva avanzando una casilla y actualizando valores maximos
+        mejor_movimiento_tablero(fila, columna_aux, color, tablero, fila, columna_aux, mejor_tamano) //llamada recursiva avanzando una casilla y actualizando valores maximos
       
       }
       else //si no se ha mejorado el tamaño
@@ -853,6 +864,8 @@ object optimizacion {
        val mejor_fila = lista(0)
        val mejor_columna = lista(1)
        val tam = lista(2)
+      
+       
        if(tam > tamano) //compara el mejor movimiento posible para cada color (cantidad de bolas iguales juntas)
        { //si con el nuevo color es mejor que el anterior
          estrategia(tablero, lista_colores.tail, mejor_fila, mejor_columna, tam, nuevo_color) 
