@@ -869,7 +869,14 @@ object optimizacion {
        
        if(tam > tamano) //compara el mejor movimiento posible para cada color (cantidad de bolas iguales juntas)
        { //si con el nuevo color es mejor que el anterior
-         estrategia(tablero, lista_colores.tail, mejor_fila, mejor_columna, tam, nuevo_color) 
+        if(tablero(mejor_fila)(mejor_columna) == 'O') //si la posicion recomendada esta vacia
+        {
+          estrategia(tablero, lista_colores.tail, mejor_fila, mejor_columna, tam, nuevo_color) 
+        }
+        else //si esa posicion ya esta ocupada
+        {
+          estrategia(tablero, lista_colores.tail, fila, columna, tamano, color)
+        }
        }
        else //si no se ha mejorado el tamaño
        {
@@ -882,12 +889,12 @@ object optimizacion {
        val num_color = contar_fichas_color(tablero,color,0)
        if(num_color >= tamano)
        {
-          List(fila, columna, color) //devuleve una lista con la fila, columna deonde se debe colocar la bola y el color de esta
+          List(fila, columna, color) //devuelve una lista con la fila, columna donde se debe colocar la bola y el color de esta
           
        }
        else
        {
-         //eliminar de la list de colores ese color ybuscar con los otros colores
+         //eliminar de la list de colores ese color y buscar con los otros colores
          val nuevos_colores = eliminar_color(color,colores)
          estrategia(tablero,nuevos_colores,0,0,0,' ')
          
@@ -896,7 +903,7 @@ object optimizacion {
      }
 
   }
-   //elimina un color de la lista de colores
+   //elimina un elemento de una lista
   def eliminar_aux(elem: Char, izq: List[Char], drch: List[Char]): List[Char] = 
    { 
      if (Nil == drch) 
