@@ -1,7 +1,8 @@
 package PL2_optimizacion
 
+
 object optimizacion {
-  
+
   
   //OPTIMIZACION
 
@@ -788,13 +789,13 @@ object optimizacion {
   }
  
   def mejor_movimiento_tablero(fila: Int, columna: Int, color: Char, tablero: List[List[Char]], mejorFila: Int, mejorColumna: Int, tamano: Int ): List[Int] = 
-  { //
+  { //devuelve el mejor movimiento posible para una bola de un determinado color 
 
 
-    if(columna < 8)
+    if(columna < 8) //mientras que queden columnas de una fila por mirar
     {
       
-      val columna_aux = columna +1
+      val columna_aux = columna +1 //se mira la siguiente columna
       val consecutivasCol = get_bolas_columna(fila,columna_aux,color,tablero,Nil) //obtenemos las bolas consecutivas que forman una columna a partir de la posicion indicada
       val consecutivasFila =  get_bolas_fila(fila, columna_aux, color, tablero, Nil) //obtenemos las bolas consecutivas que forman una fila a partir de la posicion indicada
       val consecutivasDiagonal = get_bolas_diagonal(fila, columna_aux, color, tablero, Nil) //obtenemos las bolas consecutivas que forman una diagonal a partir de la posicion indicada
@@ -803,22 +804,22 @@ object optimizacion {
       
       val mejor_lista= comparador_listas(consecutivasCol, consecutivasFila, consecutivasDiagonal)
       val mejor_tamano = mejor_lista.length
-      if(mejor_tamano > tamano)
+      if(mejor_tamano > tamano) //si esta nueva posicion es mejor
       {
          
-         mejor_movimiento_tablero(fila, columna_aux, color, tablero, fila, columna_aux, mejor_tamano)
+         mejor_movimiento_tablero(fila, columna_aux, color, tablero, fila, columna_aux, mejor_tamano) //llamada recursiva avanzando una casilla y actualizando valores maximos
       
       }
-      else
+      else //si no se ha mejorado el tamaño
       {
-         mejor_movimiento_tablero(fila, columna_aux, color, tablero, mejorFila, mejorColumna, tamano)
+         mejor_movimiento_tablero(fila, columna_aux, color, tablero, mejorFila, mejorColumna, tamano) //mantiene valores maximos y avanza una casilla
       }
     }
-    else
+    else //si se ha mirado ya una fila entera
     {
       if(fila<8)
       {
-        val fila_aux = fila+1
+        val fila_aux = fila+1 //se pasa a la siguiente fila y se inicia desde la columna 0
         val consecutivasCol = get_bolas_columna(fila_aux,0,color,tablero,Nil) //obtenemos las bolas consecutivas que forman una columna a partir de la posicion indicada
         val consecutivasFila =  get_bolas_fila(fila_aux,0, color, tablero, Nil) //obtenemos las bolas consecutivas que forman una fila a partir de la posicion indicada
         val consecutivasDiagonal = get_bolas_diagonal(fila_aux, 0, color, tablero, Nil) //obtenemos las bolas consecutivas que forman una diagonal a partir de la posicion indicada
@@ -833,9 +834,9 @@ object optimizacion {
          mejor_movimiento_tablero(fila_aux, -1, color, tablero, mejorFila, mejorColumna, tamano)
         }
       }
-      else
+      else //si ya ha recorrido todo el tablero
       {
-       List(mejorFila,mejorColumna,tamano) 
+       List(mejorFila,mejorColumna,tamano) //devuelve la mejor posicion y cantidad de bolas juntas del mismo color que se formarian
       
       }
     }
@@ -843,8 +844,8 @@ object optimizacion {
   }
   
    def estrategia(tablero: List[List[Char]], lista_colores: List[Char],fila: Int, columna: Int, tamano: Int, color: Char ): List[Any]=
-  {
-     if(!lista_colores.isEmpty)
+  {//determina el mejor movimento posible indicando en que casilla y de que color colocar la bola
+     if(!lista_colores.isEmpty) 
      {
      
        val nuevo_color = lista_colores.head
@@ -852,18 +853,18 @@ object optimizacion {
        val mejor_fila = lista(0)
        val mejor_columna = lista(1)
        val tam = lista(2)
-       if(tam > tamano)
-       {
-         estrategia(tablero, lista_colores.tail, mejor_fila, mejor_columna, tam, nuevo_color)
+       if(tam > tamano) //compara el mejor movimiento posible para cada color (cantidad de bolas iguales juntas)
+       { //si con el nuevo color es mejor que el anterior
+         estrategia(tablero, lista_colores.tail, mejor_fila, mejor_columna, tam, nuevo_color) 
        }
-       else
+       else //si no se ha mejorado el tamaño
        {
          estrategia(tablero, lista_colores.tail, fila, columna, tamano, color)
        }
      }
-     else
+     else //si ha terminado de comparar todos los colores
      {
-       List(fila, columna, color)
+       List(fila, columna, color) //devuleve una lista con la fila, columna deonde se debe colocar la bola y el color de esta
      }
 
   }
@@ -902,7 +903,7 @@ object optimizacion {
     }
   }
 
-  
+  //marina
   def get_puntos(fila: Int, columna: Int, color: Char, tablero: List[List[Char]]): Int =
   { //obtiene los puntos en funcion de las bolas eliminadas
      val consecutivasCol = get_bolas_columna(fila,columna,color,tablero,Nil) //obtenemos las bolas consecutivas que forman una columna a partir de la posicion indicada
@@ -931,4 +932,6 @@ object optimizacion {
     }
      
   }
+  
+  
 }
