@@ -132,7 +132,7 @@ object optimizacion {
      val posNueva = elegirPosicion(tablero)
      val filaNueva = posNueva(0)
      val columnaNueva = posNueva(1)
-     //Se mueve la bola a la posición indicada
+     //Se mueve la bola a la posicion indicada
      val tablero2 = mover_bola(fila, columna, filaNueva ,columnaNueva, tablero)
      val color = tablero2(filaNueva)(columnaNueva)
      val tablero3 = actualizar_tablero(filaNueva, columnaNueva, color , tablero2) //comprobar si se ha hecho alguna fila columna o diagonal de 5 y eliminar bolas
@@ -861,6 +861,7 @@ object optimizacion {
      
        val nuevo_color = lista_colores.head
        val lista = mejor_movimiento_tablero(0, -1, nuevo_color, tablero, 0, 0, 0)
+      
        val mejor_fila = lista(0)
        val mejor_columna = lista(1)
        val tam = lista(2)
@@ -877,11 +878,45 @@ object optimizacion {
      }
      else //si ha terminado de comparar todos los colores
      {
-       List(fila, columna, color) //devuleve una lista con la fila, columna deonde se debe colocar la bola y el color de esta
+       
+       val num_color = contar_fichas_color(tablero,color,0)
+       if(num_color >= tamano)
+       {
+          List(fila, columna, color) //devuleve una lista con la fila, columna deonde se debe colocar la bola y el color de esta
+          
+       }
+       else
+       {
+         //eliminar de la list de colores ese color ybuscar con los otros colores
+         val nuevos_colores = eliminar_color(color,colores)
+         estrategia(tablero,nuevos_colores,0,0,0,' ')
+         
+       }
+      
      }
 
   }
+   //elimina un color de la lista de colores
+  def eliminar_aux(elem: Char, izq: List[Char], drch: List[Char]): List[Char] = 
+   { 
+     if (Nil == drch) 
+     { 
+       return izq 
+     } 
+     if (elem == drch.head) 
+     { 
+       return izq ::: drch.tail 
+       
+     } 
+     return eliminar_aux(elem, drch.head :: izq, drch.tail) 
+   } 
   
+   def eliminar_color(elem: Char, lista: List[Char]):List[Char] = 
+   { 
+     return eliminar_aux(elem, Nil, lista) 
+   }
+
+   
   def comparador_listas(lista1: List[List[Int]], lista2: List[List[Int]],lista3: List[List[Int]]): List[List[Int]] = //compara la longitud de 3 listas y devuelve la mas grande
   {
     
@@ -945,6 +980,45 @@ object optimizacion {
     }
      
   }
+  def contar_fichas_color(tablero: List[List[Char]], color: Char, contador: Int): Int =
+  {
+    if(!tablero.isEmpty)
+    {
+      val fila = tablero.head
+      val contador_aux = contar_fichas_color_fila(fila,color,0) + contador
+      contar_fichas_color(tablero.tail,color,contador_aux)
+      
+    }else
+    {
+      contador
+    }
+    
+  }
+  def contar_fichas_color_fila(fila: List[Char], color: Char, contador: Int): Int={
+    if(!fila.isEmpty)
+    {
+      val elem = fila.head
+    
+      if(elem == color){
+        val contador_aux = contador + 1
+        contar_fichas_color_fila(fila.tail,color,contador_aux)
+      }
+      else{
+        contar_fichas_color_fila(fila.tail,color,contador)
+      }
+      
+    }
+    else
+    {
+      contador
+    }
+   
+  }
   
+  
+ 
+  
+ 
+ 
   
 }
