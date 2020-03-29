@@ -818,8 +818,16 @@ object optimizacion {
       val mejor_tamano = mejor_lista.length
       if(mejor_tamano > tamano) //si esta nueva posicion es mejor
       {
-        mejor_movimiento_tablero(fila, columna_aux, color, tablero, fila, columna_aux, mejor_tamano) //llamada recursiva avanzando una casilla y actualizando valores maximos
+        if(tablero(fila)(columna_aux) == 'O')
+        {
+           mejor_movimiento_tablero(fila, columna_aux, color, tablero, fila, columna_aux, mejor_tamano) //llamada recursiva avanzando una casilla y actualizando valores maximos
       
+        }
+        else
+        {
+          mejor_movimiento_tablero(fila, columna_aux, color, tablero, mejorFila, mejorColumna, tamano) //mantiene valores maximos y avanza una casilla
+        }
+ 
       }
       else //si no se ha mejorado el tamaño
       {
@@ -838,7 +846,15 @@ object optimizacion {
         val mejor_tamano = mejor_lista.length
         if(mejor_tamano > tamano)
         {
-          mejor_movimiento_tablero(fila_aux, -1, color, tablero, fila_aux, 0, mejor_tamano)
+          if(tablero(fila_aux)(columna) == 'O')
+          {
+            mejor_movimiento_tablero(fila_aux, -1, color, tablero, fila_aux, 0, mejor_tamano)
+          }
+          else
+          {
+            mejor_movimiento_tablero(fila_aux, -1, color, tablero, mejorFila, mejorColumna, tamano)
+          }
+          
         }
         else
         {
