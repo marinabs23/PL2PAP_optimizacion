@@ -8,8 +8,7 @@ object optimizacion {
 
   val colores: List[Char] = List('A','N','R','V','M','G') //Lista de colores posibles
   
- 
-  /*val tablero = List(
+  val tablero = List(
              List('O','O','O','O','O','O','O','O','O'), //posiciones del 0 al 8
              List('O','O','O','O','O','O','O','O','O'),
              List('O','O','O','O','O','O','O','O','O'),
@@ -19,22 +18,9 @@ object optimizacion {
              List('O','O','O','O','O','O','O','O','O'),
              List('O','O','O','O','O','O','O','O','O'),
              List('O','O','O','O','O','O','O','O','O')
-             ) */
-
-  
-   val tablero = List(
-             List('A','A','A','G','A','A','A','R','V'), //posiciones del 0 al 8
-             List('A','R','G','O','R','M','N','A','R'),
-             List('A','O','G','O','R','O','N','A','R'),
-             List('V','N','O','M','A','R','A','V','A'),
-             List('A','M','G','G','R','M','N','A','R'),
-             List('O','A','A','G','A','A','A','R','V'),
-             List('N','A','A','G','A','A','A','R','V'),
-             List('A','O','G','O','R','O','N','A','R'),
-             List('A','A','A','G','A','O','A','R','V')
              ) 
-       
-    //Marina y Nicol
+
+  //Marina y Nicol
   def main(args: Array[String]) 
     {
     //MECANICA
@@ -46,6 +32,44 @@ object optimizacion {
     jugar(tableroLleno, 0) 
          
     }
+  
+  //Nicol
+  def jugar(tablero: List[List[Char]], puntos: Int): List[List[Char]] =
+  {
+
+    if(esMiembro(tablero, 'O')) //Si quedan huecos libres
+    { //Continua la partida
+     val mov_recomendado: List[Any] = estrategia(tablero,colores,0,0,0,' ')
+     val a = mov_recomendado(2).toString.toInt.toChar
+     println("Se recomienda mover a la fila "+ mov_recomendado(0)+" columna "+mov_recomendado(1)+" una bola de color "+ a)
+     val pos = elegirBola(tablero)
+     val fila = pos(0)
+     val columna = pos(1)
+     val posNueva = elegirPosicion(tablero)
+     val filaNueva = posNueva(0)
+     val columnaNueva = posNueva(1)
+     //Se mueve la bola a la posicion indicada
+     val tablero2 = mover_bola(fila, columna, filaNueva ,columnaNueva, tablero)
+     val color = tablero2(filaNueva)(columnaNueva)
+     val tablero3 = actualizar_tablero(filaNueva, columnaNueva, color , tablero2) //comprobar si se ha hecho alguna fila columna o diagonal de 5 y eliminar bolas
+     imprimir_tablero(tablero3) 
+     val puntos2 = get_puntos(filaNueva, columnaNueva, color , tablero2) + puntos //se actualiza el marcador con los puntos de esta ronda
+     println("PUNTOS: "+ puntos2) 
+     jugar(tablero3, puntos2) //se inicia otra ronda
+    
+    }
+    else //Si no quedan huecos en el tablero se acaba la partida
+    {
+      println("Fin de la partida")
+      println(tablero)
+      println("1:SALIR")
+      println("2:GUARDAR PUNTOS")
+      println("3:REINICIAR")
+      val opcion = scala.io.StdIn.readInt()
+      opcion_final(opcion)
+      tablero
+    }
+  }
   
   //Marina
   def elegirBola(tablero: List[List[Char]]): List[Int] = //pide por consola la fila y la columna de la bola que se desea mover
@@ -123,60 +147,18 @@ object optimizacion {
      }
      
   }
-
    //Nicol
-  def opcion_final(opcion: Int)
+  def opcion_final(opcion: Int) //dependiendo de la opcion, cierra el juego, lo reinicia o guarda los puntos
   {
      opcion match {
        //salir
      case 1 => System.exit(0)
        //guardar
-     case 2 => 
+     case 2 => //FALTA
        //reiniciar
-     case 3 => main(null)
-    
-   }
+     case 3 => main(null)}
     
   }
-  
-  //Nicol
-  def jugar(tablero: List[List[Char]], puntos: Int): List[List[Char]] =
-  {
-
-    if(esMiembro(tablero, 'O')) //Si quedan huecos libres
-    { //Continua la partida
-     val mov_recomendado: List[Any] = estrategia(tablero,colores,0,0,0,' ')
-     val a = mov_recomendado(2).toString.toInt.toChar
-     println("Se recomienda mover a la fila "+ mov_recomendado(0)+" columna "+mov_recomendado(1)+" una bola de color "+ a)
-     val pos = elegirBola(tablero)
-     val fila = pos(0)
-     val columna = pos(1)
-     val posNueva = elegirPosicion(tablero)
-     val filaNueva = posNueva(0)
-     val columnaNueva = posNueva(1)
-     //Se mueve la bola a la posicion indicada
-     val tablero2 = mover_bola(fila, columna, filaNueva ,columnaNueva, tablero)
-     val color = tablero2(filaNueva)(columnaNueva)
-     val tablero3 = actualizar_tablero(filaNueva, columnaNueva, color , tablero2) //comprobar si se ha hecho alguna fila columna o diagonal de 5 y eliminar bolas
-     imprimir_tablero(tablero3) 
-     val puntos2 = get_puntos(filaNueva, columnaNueva, color , tablero2) + puntos //se actualiza el marcador con los puntos de esta ronda
-     println("PUNTOS: "+ puntos2) 
-     jugar(tablero3, puntos2) //se inicia otra ronda
-    
-    }
-    else //Si no quedan huecos en el tablero se acaba la partida
-    {
-      println("Fin de la partida")
-      println(tablero)
-      println("1:SALIR")
-      println("2:GUARDAR PUNTOS")
-      println("3:REINICIAR")
-      val opcion = scala.io.StdIn.readInt()
-      opcion_final(opcion)
-      tablero
-    }
-  }
-  
   //Nicol
   def imprimir_tablero(tablero: List[List[Char]]): Any = { //imprime el tablero con formato 
     
@@ -205,8 +187,7 @@ object optimizacion {
     {
       print("\n")
     }
-   
-    
+
   }
   
   //Nicol
@@ -1030,45 +1011,40 @@ object optimizacion {
     }
      
   }
-  def contar_fichas_color(tablero: List[List[Char]], color: Char, contador: Int): Int =
+  def contar_fichas_color(tablero: List[List[Char]], color: Char, contador: Int): Int = 
+    //cuenta las fichas de un color que hay en el tablero
   {
-    if(!tablero.isEmpty)
+    if(!tablero.isEmpty) //mientras el tablero no este vacio
     {
-      val fila = tablero.head
-      val contador_aux = contar_fichas_color_fila(fila,color,0) + contador
-      contar_fichas_color(tablero.tail,color,contador_aux)
+      val fila = tablero.head //cogemos la primera fila y contamos las fichas del color dado
+      val contador_aux = contar_fichas_color_fila(fila,color,0) + contador //actualizamos el valor
+      contar_fichas_color(tablero.tail,color,contador_aux) //llamada recursiva con el resto de las filas del tablero
       
     }else
     {
-      contador
+      contador //devolvemos el contador
     }
     
   }
   def contar_fichas_color_fila(fila: List[Char], color: Char, contador: Int): Int={
+    //cuenta las bolas de un color de una fila
     if(!fila.isEmpty)
     {
-      val elem = fila.head
+      val elem = fila.head //cogemos el primer valor de la fila
     
-      if(elem == color){
-        val contador_aux = contador + 1
-        contar_fichas_color_fila(fila.tail,color,contador_aux)
+      if(elem == color){ //en caso de que sea del color buscado
+        val contador_aux = contador + 1 //acutualizamos el contador
+        contar_fichas_color_fila(fila.tail,color,contador_aux) //llamada recursiva con el retso de elementos de la fila
       }
-      else{
-        contar_fichas_color_fila(fila.tail,color,contador)
+      else{ //si es distinto
+        contar_fichas_color_fila(fila.tail,color,contador) //llamada recursiva con el contador sin actualiar
       }
       
     }
     else
     {
-      contador
+      contador //devolvemos el contador
     }
    
   }
-  
-  
- 
-  
- 
- 
-  
 }
