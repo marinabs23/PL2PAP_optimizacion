@@ -1,5 +1,6 @@
 package PL2_optimizacion
 
+import java.io._
 
 object optimizacion {
 
@@ -8,7 +9,7 @@ object optimizacion {
 
   val colores: List[Char] = List('A','N','R','V','M','G') //Lista de colores posibles
   
-  val tablero = List(
+  /*val tablero = List(
              List('O','O','O','O','O','O','O','O','O'), //posiciones del 0 al 8
              List('O','O','O','O','O','O','O','O','O'),
              List('O','O','O','O','O','O','O','O','O'),
@@ -19,6 +20,20 @@ object optimizacion {
              List('O','O','O','O','O','O','O','O','O'),
              List('O','O','O','O','O','O','O','O','O')
              ) 
+             */
+  
+    val tablero = List(
+             List('A','R','A','G','A','A','A','R','V'), //posiciones del 0 al 8
+             List('A','R','G','O','R','M','N','A','R'),
+             List('A','R','O','O','R','O','N','A','R'),
+             List('V','R','O','O','A','R','A','V','A'),
+             List('A','O','G','O','R','M','N','A','R'),
+             List('A','A','A','G','A','A','A','R','V'),
+             List('N','A','A','G','A','A','A','R','V'),
+             List('A','M','G','O','R','O','N','A','R'),
+             List('A','A','A','G','A','A','A','R','V')
+             ) 
+   val bf = new BufferedReader(new FileReader("puntos.txt"))
 
   //Marina y Nicol
   def main(args: Array[String]) 
@@ -66,22 +81,64 @@ object optimizacion {
       println("2:GUARDAR PUNTOS")
       println("3:REINICIAR")
       val opcion = scala.io.StdIn.readInt()
-      opcion_final(opcion)
+      opcion_final(opcion, puntos)
       tablero
     }
   }
-   //Nicol
-  def opcion_final(opcion: Int) //dependiendo de la opcion, cierra el juego, lo reinicia o guarda los puntos
+ def opcion_final(opcion: Int, puntos: Int) //dependiendo de la opcion, cierra el juego, lo reinicia o guarda los puntos
   {
      opcion match {
        //salir
      case 1 => System.exit(0)
        //guardar
-     case 2 => //FALTA
+     case 2 => 
+       //guardar puntos
+       escribir("puntos.txt", puntos)
+       
+      //imprimir ranking
+       println("HISTORIAL DE RESULTADOS")
+       imprimir_ranking(leer(Nil))
        //reiniciar
      case 3 => main(null)}
-    
   }
+  
+  //Marina
+  def imprimir_ranking(lista: List[Int])
+  {
+    if(lista.length != 0)
+    {
+      println(lista.head)
+      imprimir_ranking(lista.tail)
+    }
+  }
+  
+   //nicol
+   def escribir(nombreArchivo: String, puntos: Int): Unit = {
+   // val pw = new PrintWriter(new File(nombreArchivo))
+    val pw = new BufferedWriter(new FileWriter(nombreArchivo, true));
+    try
+    {
+      pw.write(puntos.toString) 
+      pw.newLine()
+    }
+    finally pw.close()
+   }
+   
+   //Marina
+   def leer(lista: List[Int]): List[Int]={ //lee recursivamente un archivo linea a linea y devuelve las lineas en una lista
+     
+     val linea = bf.readLine()
+     if(linea != null)
+     {
+       val lista2 = linea.toInt :: lista
+       leer(lista2)
+     }
+     else
+     {
+        lista
+     }
+
+   }
    //Nicol
   def imprimir_tablero(tablero: List[List[Char]]){ //imprime el tablero con formato 
     
