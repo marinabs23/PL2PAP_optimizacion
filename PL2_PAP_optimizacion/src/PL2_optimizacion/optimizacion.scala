@@ -33,6 +33,7 @@ object optimizacion {
              List('A','M','G','O','R','O','N','A','R'),
              List('A','A','A','G','A','A','A','R','V')
              ) 
+   val pw = new BufferedWriter(new FileWriter("puntos.txt", true));
    val bf = new BufferedReader(new FileReader("puntos.txt"))
 
   //Marina y Nicol
@@ -93,7 +94,7 @@ object optimizacion {
        //guardar
      case 2 => 
        //guardar puntos
-       escribir("puntos.txt", puntos)
+       escribir(puntos)
        
       //imprimir ranking
        println("HISTORIAL DE RESULTADOS")
@@ -113,9 +114,8 @@ object optimizacion {
   }
   
    //nicol
-   def escribir(nombreArchivo: String, puntos: Int): Unit = {
-   // val pw = new PrintWriter(new File(nombreArchivo))
-    val pw = new BufferedWriter(new FileWriter(nombreArchivo, true));
+   def escribir(puntos: Int): Unit = {
+
     try
     {
       pw.write(puntos.toString) 
