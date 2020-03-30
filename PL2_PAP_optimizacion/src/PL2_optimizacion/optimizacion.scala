@@ -70,8 +70,106 @@ object optimizacion {
       tablero
     }
   }
+   //Nicol
+  def opcion_final(opcion: Int) //dependiendo de la opcion, cierra el juego, lo reinicia o guarda los puntos
+  {
+     opcion match {
+       //salir
+     case 1 => System.exit(0)
+       //guardar
+     case 2 => //FALTA
+       //reiniciar
+     case 3 => main(null)}
+    
+  }
+   //Nicol
+  def imprimir_tablero(tablero: List[List[Char]]){ //imprime el tablero con formato 
+    
+    if(!tablero.isEmpty)
+    {
+    val fila = tablero.head
+    imprimir_fila(fila)
+    imprimir_tablero(tablero.tail)
+    }
+    else
+    {
+      print("\n")
+    }
+
+  }
+  //Nicol
+  def imprimir_fila(fila: List[Char]){ //metodo auxiliar que imprime una fila
+    if(!fila.isEmpty)
+    {
+       val elem = fila.head
+       print(elem + " ")
+       val tail = fila.tail
+       imprimir_fila(tail)
+    }
+    else
+    {
+      print("\n")
+    }
+
+  }
   
-  //Marina
+  //marina
+  def insertar_aux (color: Char, pos: Int, tablero: List[Char]): List[Char] = { //inserta un char en una lista
+    if (pos==0) color::tablero.tail
+    else tablero.head::insertar_aux(color, pos-1, tablero.tail)
+  } 
+     
+  //marina 
+  def insertar_aux2 (lista: List[Char], pos: Int, tablero: List[List[Char]]): List[List[Char]] = { //inserta una lista en el tablero
+    if (pos==0) lista::tablero.tail
+    else tablero.head::insertar_aux2(lista, pos-1, tablero.tail)
+  } 
+  
+  //marina
+  def insertar (color: Char, fila: Int, columna: Int, tablero: List[List[Char]]): List[List[Char]] = { 
+    //actualiza el tablero dadas la fila y columna en las que se quiere insertar una bola y el color de esta
+    val filaNueva:List[Char] = insertar_aux(color, columna, tablero(fila))
+    insertar_aux2(filaNueva, fila, tablero) 
+  }
+
+  //nicol y marina
+  def llenar_tablero(inicio: Int, numBolas: Int, tablero: List[List[Char]]): List[List[Char]] = { 
+    if(esMiembro(tablero, 'O'))
+    {
+       if (inicio < numBolas) //si todavia no se han metido el numero de bolas deseado
+       {
+         val color_aleatorio = scala.util.Random.nextInt(5) //se genera una bola de color aleatorio
+         val columna = scala.util.Random.nextInt(9) //y posicion aleatoria
+         val fila = scala.util.Random.nextInt(9) 
+         val bola = colores(color_aleatorio)
+         if(tablero(fila)(columna) == 'O') //si la posicion aleatoria generada esta vacia
+         {
+           val aux = insertar(bola,fila,columna,tablero) //se introduce la bola en el tablero
+           llenar_tablero(inicio+1, numBolas, aux) //llamada recursiva para seguir introduciendo bolas
+         }
+         else
+         {
+           llenar_tablero(inicio, numBolas, tablero)
+         }
+       }
+       else
+       {
+         tablero //retorna el tablero 
+       }
+     }
+     else
+     {
+       println("NO QUEDAN HUECOS")
+       tablero
+     }
+   }
+   //marina
+   def mover_bola(filaIni: Int, columnaIni: Int, filaFin: Int ,columnaFin: Int, tablero: List[List[Char]]): List[List[Char]] = { //mueve bola de (filaIni, columnaIni) a (filaFin, columnaFin)
+     val bola = tablero(filaIni)(columnaIni) //obtener bola que se quiere mover
+     val aux = insertar(bola, filaFin, columnaFin, tablero) //insertar bola adecuada en posicion final
+     insertar('O', filaIni, columnaIni, aux)   //vaciar posicion inicial
+   }
+  //marina
   def elegirBola(tablero: List[List[Char]]): List[Int] = //pide por consola la fila y la columna de la bola que se desea mover
   {
     try
@@ -147,49 +245,6 @@ object optimizacion {
      }
      
   }
-   //Nicol
-  def opcion_final(opcion: Int) //dependiendo de la opcion, cierra el juego, lo reinicia o guarda los puntos
-  {
-     opcion match {
-       //salir
-     case 1 => System.exit(0)
-       //guardar
-     case 2 => //FALTA
-       //reiniciar
-     case 3 => main(null)}
-    
-  }
-  //Nicol
-  def imprimir_tablero(tablero: List[List[Char]]): Any = { //imprime el tablero con formato 
-    
-    if(!tablero.isEmpty)
-    {
-    val fila = tablero.head
-    imprimir_fila(fila)
-    imprimir_tablero(tablero.tail)
-    }
-    else
-    {
-      print("\n")
-    }
-
-  }
-  //Nicol
-  def imprimir_fila(fila: List[Char]): Any = { //metodo auxiliar que imprime una fila
-    if(!fila.isEmpty)
-    {
-       val elem = fila.head
-       print(elem + " ")
-       val tail = fila.tail
-       imprimir_fila(tail)
-    }
-    else
-    {
-      print("\n")
-    }
-
-  }
-  
   //Nicol
   def esMiembro( lista: List[List[Char]], elem: Char): Boolean = { //comprueba si elem es miembro del tablero
     if(!lista.isEmpty)
@@ -212,7 +267,7 @@ object optimizacion {
   }
   
   //Nicol
- def esMiembro_fila( lista: List[Char], elem: Char): Boolean = { //comprueba si elem es miembro de una fila
+  def esMiembro_fila( lista: List[Char], elem: Char): Boolean = { //comprueba si elem es miembro de una fila
     if(!lista.isEmpty)
     {
       val item = lista.head
@@ -229,73 +284,12 @@ object optimizacion {
     {
       false
     }
- }
+  }
   
-    //marina
-     def insertar_aux (color: Char, pos: Int, tablero: List[Char]): List[Char] = { //inserta un char en una lista
-          if (pos==0) color::tablero.tail
-          else tablero.head::insertar_aux(color, pos-1, tablero.tail)
-          } 
-     
-    //marina 
-    def insertar_aux2 (lista: List[Char], pos: Int, tablero: List[List[Char]]): List[List[Char]] = { //inserta una lista en el tablero
-          if (pos==0) lista::tablero.tail
-          else tablero.head::insertar_aux2(lista, pos-1, tablero.tail)
-          } 
-  
-    //marina
-   def insertar (color: Char, fila: Int, columna: Int, tablero: List[List[Char]]): List[List[Char]] = { 
-     //actualiza el tablero dadas la fila y columna en las que se quiere insertar una bola y el color de esta
-     val filaNueva:List[Char] = insertar_aux(color, columna, tablero(fila))
-     insertar_aux2(filaNueva, fila, tablero) 
-
-      }
-
-      //nicol y marina
-   def llenar_tablero(inicio: Int, numBolas: Int, tablero: List[List[Char]]): List[List[Char]] = { 
-     if(esMiembro(tablero, 'O'))
-     {
-       if (inicio < numBolas) //si todavia no se han metido el numero de bolas deseado
-       {
-         val color_aleatorio = scala.util.Random.nextInt(5) //se genera una bola de color aleatorio
-         val columna = scala.util.Random.nextInt(9) //y posicion aleatoria
-         val fila = scala.util.Random.nextInt(9) 
-         val bola = colores(color_aleatorio)
-         if(tablero(fila)(columna) == 'O') //si la posicion aleatoria generada esta vacia
-         {
-           val aux = insertar(bola,fila,columna,tablero) //se introduce la bola en el tablero
-           llenar_tablero(inicio+1, numBolas, aux) //llamada recursiva para seguir introduciendo bolas
-         }
-         else
-         {
-           llenar_tablero(inicio, numBolas, tablero)
-         }
-
-       }
-       else
-       {
-         tablero //retorna el tablero 
-       }
-     }
-     else
-     {
-       println("NO QUEDAN HUECOS")
-       tablero
-     }
-       
- 
-   }
-   
-   //marina
-   def mover_bola(filaIni: Int, columnaIni: Int, filaFin: Int ,columnaFin: Int, tablero: List[List[Char]]): List[List[Char]] = { //mueve bola de (filaIni, columnaIni) a (filaFin, columnaFin)
-     val bola = tablero(filaIni)(columnaIni) //obtener bola que se quiere mover
-     val aux = insertar(bola, filaFin, columnaFin, tablero) //insertar bola adecuada en posicion final
-     insertar('O', filaIni, columnaIni, aux)   //vaciar posicion inicial
-     
-   }
+    
    //NICOL y marina
-   def elementos_fila_izq(fila: Int, columna: Int, color: Char,tablero: List[List[Char]],lista: List[List[Int]]):  List[List[Int]] = //saca una lista con las posiciones  consecutivas del mismo color, comprobando posiciones desde el color hacia la izquierda
-   {
+  def elementos_fila_izq(fila: Int, columna: Int, color: Char,tablero: List[List[Char]],lista: List[List[Int]]):  List[List[Int]] = //saca una lista con las posiciones  consecutivas del mismo color, comprobando posiciones desde el color hacia la izquierda
+  {
      if(columna > 0) //siempre y cuando la columna sea mayor que 0
      {
        if(tablero(fila)(columna-1) == color)
@@ -314,12 +308,10 @@ object optimizacion {
      {
      lista
      }
-    
-   }
-   //NICOL y marina
-    def elementos_fila_drch(fila: Int, columna: Int, color: Char,tablero: List[List[Char]],lista: List[List[Int]]):  List[List[Int]] = 
-    { //saca una lista con las posiciones  consecutivas del mismo color, comprobando posiciones desde el color hacia la derecha
-
+  }
+  //NICOL y marina
+  def elementos_fila_drch(fila: Int, columna: Int, color: Char,tablero: List[List[Char]],lista: List[List[Int]]):  List[List[Int]] = 
+  { //saca una lista con las posiciones  consecutivas del mismo color, comprobando posiciones desde el color hacia la derecha
      if(columna < 8)
      {
        if(tablero(fila)(columna +1) == color)
@@ -327,7 +319,6 @@ object optimizacion {
         val pos = List(fila,columna+1)
         val lista_nueva = pos :: lista
         elementos_fila_drch(fila, columna+1,color, tablero,lista_nueva)
-       
        }
        else //si no es del mismo color para de comprobar ya que no serian consecutivas y devuelve la lista
        {
@@ -338,20 +329,20 @@ object optimizacion {
      {
        lista
      }
-    }
+   }
 
-    //NICOL y marina 
-    def get_bolas_fila(fila: Int, columna: Int, color: Char,tablero: List[List[Char]],lista: List[List[Int]]):  List[List[Int]] = //devuelve una lista con las fichas consecutivas del mismo color de una misma fila
-    {
+   //NICOL y marina 
+   def get_bolas_fila(fila: Int, columna: Int, color: Char,tablero: List[List[Char]],lista: List[List[Int]]):  List[List[Int]] = 
+     //devuelve una lista con las fichas consecutivas del mismo color de una misma fila
+   {
        val elementos_drch = elementos_fila_drch(fila,columna,color,tablero,Nil)
        val elementos_izq = elementos_fila_izq(fila,columna,color,tablero,Nil) 
        val posActual = List(fila, columna)
        val lista2 = posActual :: elementos_izq
        val listaConsecutivas = lista2 ++ elementos_drch
        listaConsecutivas
+    }
 
-     }
-    
     //NICOL y marina
    def elementos_columna_arriba(fila: Int, columna: Int, color: Char,tablero: List[List[Char]],lista: List[List[Int]]):  List[List[Int]] = //saca una lista con las posiciones  consecutivas del mismo color, comprobando posiciones desde la posicion seleccionada hacia arriba
    {
@@ -376,8 +367,8 @@ object optimizacion {
     
    }
    //NICOL y marina
-    def elementos_columna_abajo(fila: Int, columna: Int, color: Char,tablero: List[List[Char]],lista: List[List[Int]]):  List[List[Int]] = 
-    { //saca una lista con las posiciones  consecutivas del mismo color, comprobando posiciones desde la posicion seleccionada hacia abajo
+   def elementos_columna_abajo(fila: Int, columna: Int, color: Char,tablero: List[List[Char]],lista: List[List[Int]]):  List[List[Int]] = 
+   { //saca una lista con las posiciones  consecutivas del mismo color, comprobando posiciones desde la posicion seleccionada hacia abajo
        if(fila < 8) //si la fila no es la fila inferior del tablero
      {
        if(tablero(fila+1)(columna) == color)
@@ -396,8 +387,7 @@ object optimizacion {
      {
        lista
      }
-    }
-    
+   }
     //NICOL y marina
     def get_bolas_columna(fila: Int, columna: Int, color: Char,tablero: List[List[Char]],lista: List[List[Int]]):  List[List[Int]] = //devuelve una lista con las fichas consecutivas del mismo color de una misma columna
     {
@@ -407,9 +397,7 @@ object optimizacion {
        val lista2 = posActual :: elementos_abajo
        val listaConsecutivas = lista2 ++ elementos_arriba
        listaConsecutivas
-
      }
-    
     //NICOL
     def elementos_diagonal_abajo_drch2(fila: Int, columna: Int, color: Char,tablero: List[List[Char]],lista: List[List[Int]]):  List[List[Int]] = 
     { //2 diagonal que mira primero abajo y luego derecha
@@ -444,7 +432,6 @@ object optimizacion {
          lista
       }
     }
-    
     //NICOL
     def elementos_diagonal_abajo_drch1(fila: Int, columna: Int, color: Char,tablero: List[List[Char]],lista: List[List[Int]]):  List[List[Int]] = 
     { //1 diagonal que mira primero derecha y luego abajo
@@ -479,8 +466,6 @@ object optimizacion {
          lista
       }
     }
-    
-    
     //NICOL
      def elementos_diagonal_arriba_drch2(fila: Int, columna: Int, color: Char,tablero: List[List[Char]],lista: List[List[Int]]):  List[List[Int]] = 
     { //2 diagonal que mira primero derecha y luego arriba
@@ -515,9 +500,8 @@ object optimizacion {
          lista
       }
     }
-     
-     //marina
-      def elementos_diagonal_arriba_drch1(fila: Int, columna: Int, color: Char,tablero: List[List[Char]],lista: List[List[Int]]):  List[List[Int]] = 
+    //marina
+    def elementos_diagonal_arriba_drch1(fila: Int, columna: Int, color: Char,tablero: List[List[Char]],lista: List[List[Int]]):  List[List[Int]] = 
     { //1 diagonal que mira primero arriba y luego derecha
        if((fila > 0) && (columna < 8))
       {
@@ -550,9 +534,8 @@ object optimizacion {
          lista
       }
     }
-     
-     //NICOL
-     def elementos_diagonal_abajo_izq2(fila: Int, columna: Int, color: Char,tablero: List[List[Char]],lista: List[List[Int]]):  List[List[Int]] = //devuelve una lista con las posiciones de las bolas del mismo color que forman una diagonal (SEGUN EL PROFE)
+    //NICOL
+    def elementos_diagonal_abajo_izq2(fila: Int, columna: Int, color: Char,tablero: List[List[Char]],lista: List[List[Int]]):  List[List[Int]] = //devuelve una lista con las posiciones de las bolas del mismo color que forman una diagonal (SEGUN EL PROFE)
     { //2 diagonal que mira primero abajo y luego izquierda
        
       if((fila < 8) && (columna > 0))
@@ -586,9 +569,8 @@ object optimizacion {
          lista
       }
     }
-    
-     //Marina
-     def elementos_diagonal_abajo_izq1(fila: Int, columna: Int, color: Char,tablero: List[List[Char]],lista: List[List[Int]]):  List[List[Int]] = //devuelve una lista con las posiciones de las bolas del mismo color que forman una diagonal (SEGUN EL PROFE)
+    //Marina
+    def elementos_diagonal_abajo_izq1(fila: Int, columna: Int, color: Char,tablero: List[List[Char]],lista: List[List[Int]]):  List[List[Int]] = //devuelve una lista con las posiciones de las bolas del mismo color que forman una diagonal (SEGUN EL PROFE)
     { //1 diagonal que mira primero izquierda y luego abajo
        
       if((fila < 8) && (columna > 0))
@@ -622,9 +604,8 @@ object optimizacion {
          lista
       }
     }
-     
     //NICOL
-     def elementos_diagonal_arriba_izq2(fila: Int, columna: Int, color: Char,tablero: List[List[Char]],lista: List[List[Int]]):  List[List[Int]] = 
+    def elementos_diagonal_arriba_izq2(fila: Int, columna: Int, color: Char,tablero: List[List[Char]],lista: List[List[Int]]):  List[List[Int]] = 
     {//2 diagonal que mira primero izquierda y luego arriba
         if((fila > 0) && (columna > 0))
       {
@@ -792,25 +773,21 @@ object optimizacion {
     if(consecutivasCol.length >= 5) //si hay mas de 5 bolas 
     { 
       eliminar_bolas(consecutivasCol,tablero) //Se eliminan
-
     }
     else if(consecutivasFila.length >= 5)
     { 
       eliminar_bolas(consecutivasFila,tablero)
-
     }
     else if(consecutivasDiagonal.length >= 5)
     {
       eliminar_bolas(consecutivasDiagonal,tablero)
-      
     }
     else //si no se ha conseguido ninguna linea de 5 nueva
     {
       llenar_tablero(0,3,tablero)  //se insertan 3 bolas nuevas en posiciones aleatorias
     }
-     
   }
- 
+  //marina
   def mejor_movimiento_tablero(fila: Int, columna: Int, color: Char, tablero: List[List[Char]], mejorFila: Int, mejorColumna: Int, tamano: Int ): List[Int] = 
   { //devuelve el mejor movimiento posible para una bola de un determinado color 
 
@@ -877,8 +854,8 @@ object optimizacion {
     }
 
   }
-  
-   def estrategia(tablero: List[List[Char]], lista_colores: List[Char],fila: Int, columna: Int, tamano: Int, color: Char ): List[Any]=
+  //nicol
+  def estrategia(tablero: List[List[Char]], lista_colores: List[Char],fila: Int, columna: Int, tamano: Int, color: Char ): List[Any]=
   {//determina el mejor movimento posible indicando en que casilla y de que color colocar la bola
      if(!lista_colores.isEmpty) 
      {
@@ -893,14 +870,7 @@ object optimizacion {
        
        if(tam > tamano) //compara el mejor movimiento posible para cada color (cantidad de bolas iguales juntas)
        { //si con el nuevo color es mejor que el anterior
-        if(tablero(mejor_fila)(mejor_columna) == 'O') //si la posicion recomendada esta vacia
-        {
-          estrategia(tablero, lista_colores.tail, mejor_fila, mejor_columna, tam, nuevo_color) 
-        }
-        else //si esa posicion ya esta ocupada
-        {
-          estrategia(tablero, lista_colores.tail, fila, columna, tamano, color)
-        }
+         estrategia(tablero, lista_colores.tail, mejor_fila, mejor_columna, tam, nuevo_color) 
        }
        else //si no se ha mejorado el tamaño
        {
@@ -913,12 +883,12 @@ object optimizacion {
        val num_color = contar_fichas_color(tablero,color,0)
        if(num_color >= tamano)
        {
-          List(fila, columna, color) //devuelve una lista con la fila, columna donde se debe colocar la bola y el color de esta
+          List(fila, columna, color) //devuleve una lista con la fila, columna deonde se debe colocar la bola y el color de esta
           
        }
        else
        {
-         //eliminar de la list de colores ese color y buscar con los otros colores
+         //eliminar de la list de colores ese color ybuscar con los otros colores
          val nuevos_colores = eliminar_color(color,colores)
          estrategia(tablero,nuevos_colores,0,0,0,' ')
          
@@ -927,27 +897,26 @@ object optimizacion {
      }
 
   }
-   //elimina un elemento de una lista
-  def eliminar_aux(elem: Char, izq: List[Char], drch: List[Char]): List[Char] = 
+  //nicol
+  def eliminar_aux(elem: Char, izq: List[Char], drch: List[Char]): List[Char] = //metodo auxliar para eliminar un elementod e una lista
    { 
-     if (Nil == drch) 
+     if (Nil == drch) //si la lsita de la drch esta vacia
      { 
-       return izq 
+        izq //devolvemos la lista de la izq
      } 
-     if (elem == drch.head) 
+     if (elem == drch.head) //si el elemento es la cabeza de la lista de la drch
      { 
-       return izq ::: drch.tail 
+        izq ::: drch.tail //concatenamos la lista de la izq con el retso de la lista de la drch, de esta forma eliminamos el elemento
        
      } 
-     return eliminar_aux(elem, drch.head :: izq, drch.tail) 
+     eliminar_aux(elem, drch.head :: izq, drch.tail) //llamada recursiva
    } 
   
-   def eliminar_color(elem: Char, lista: List[Char]):List[Char] = 
+   def eliminar_color(elem: Char, lista: List[Char]):List[Char] = //elimina un elemeto de una lista de forma recursiva
    { 
-     return eliminar_aux(elem, Nil, lista) 
+      eliminar_aux(elem, Nil, lista) 
    }
-
-   
+  //marina y Nicol 
   def comparador_listas(lista1: List[List[Int]], lista2: List[List[Int]],lista3: List[List[Int]]): List[List[Int]] = //compara la longitud de 3 listas y devuelve la mas grande
   {
     
@@ -1011,7 +980,8 @@ object optimizacion {
     }
      
   }
-  def contar_fichas_color(tablero: List[List[Char]], color: Char, contador: Int): Int = 
+  //nicol
+   def contar_fichas_color(tablero: List[List[Char]], color: Char, contador: Int): Int = 
     //cuenta las fichas de un color que hay en el tablero
   {
     if(!tablero.isEmpty) //mientras el tablero no este vacio
@@ -1026,6 +996,7 @@ object optimizacion {
     }
     
   }
+   //nicol
   def contar_fichas_color_fila(fila: List[Char], color: Char, contador: Int): Int={
     //cuenta las bolas de un color de una fila
     if(!fila.isEmpty)
@@ -1045,6 +1016,5 @@ object optimizacion {
     {
       contador //devolvemos el contador
     }
-   
   }
 }
