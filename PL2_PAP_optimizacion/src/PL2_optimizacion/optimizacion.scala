@@ -8,7 +8,8 @@ object optimizacion {
 
   val colores: List[Char] = List('A','N','R','V','M','G') //Lista de colores posibles
   
-  val tablero = List(
+ 
+  /*val tablero = List(
              List('O','O','O','O','O','O','O','O','O'), //posiciones del 0 al 8
              List('O','O','O','O','O','O','O','O','O'),
              List('O','O','O','O','O','O','O','O','O'),
@@ -18,8 +19,20 @@ object optimizacion {
              List('O','O','O','O','O','O','O','O','O'),
              List('O','O','O','O','O','O','O','O','O'),
              List('O','O','O','O','O','O','O','O','O')
-             ) 
+             ) */
 
+  
+   val tablero = List(
+             List('A','A','A','G','A','A','A','R','V'), //posiciones del 0 al 8
+             List('A','R','G','O','R','M','N','A','R'),
+             List('A','O','G','O','R','O','N','A','R'),
+             List('V','N','O','M','A','R','A','V','A'),
+             List('A','M','G','G','R','M','N','A','R'),
+             List('O','A','A','G','A','A','A','R','V'),
+             List('N','A','A','G','A','A','A','R','V'),
+             List('A','O','G','O','R','O','N','A','R'),
+             List('A','A','A','G','A','O','A','R','V')
+             ) 
        
     //Marina y Nicol
   def main(args: Array[String]) 
@@ -110,22 +123,31 @@ object optimizacion {
      }
      
   }
+
+   //Nicol
+  def opcion_final(opcion: Int)
+  {
+     opcion match {
+       //salir
+     case 1 => System.exit(0)
+       //guardar
+     case 2 => 
+       //reiniciar
+     case 3 => main(null)
+    
+   }
+    
+  }
   
   //Nicol
   def jugar(tablero: List[List[Char]], puntos: Int): List[List[Char]] =
   {
-    
-    
+
     if(esMiembro(tablero, 'O')) //Si quedan huecos libres
     { //Continua la partida
      val mov_recomendado: List[Any] = estrategia(tablero,colores,0,0,0,' ')
      val a = mov_recomendado(2).toString.toInt.toChar
-     
-     
      println("Se recomienda mover a la fila "+ mov_recomendado(0)+" columna "+mov_recomendado(1)+" una bola de color "+ a)
-     
-     
- 
      val pos = elegirBola(tablero)
      val fila = pos(0)
      val columna = pos(1)
@@ -146,6 +168,11 @@ object optimizacion {
     {
       println("Fin de la partida")
       println(tablero)
+      println("1:SALIR")
+      println("2:GUARDAR PUNTOS")
+      println("3:REINICIAR")
+      val opcion = scala.io.StdIn.readInt()
+      opcion_final(opcion)
       tablero
     }
   }
