@@ -9,7 +9,7 @@ object optimizacion {
 
   val colores: List[Char] = List('A','N','R','V','M','G') //Lista de colores posibles
   
-  /*val tablero = List(
+ val tablero = List(
              List('O','O','O','O','O','O','O','O','O'), //posiciones del 0 al 8
              List('O','O','O','O','O','O','O','O','O'),
              List('O','O','O','O','O','O','O','O','O'),
@@ -20,39 +20,28 @@ object optimizacion {
              List('O','O','O','O','O','O','O','O','O'),
              List('O','O','O','O','O','O','O','O','O')
              ) 
-             */
-  
-    val tablero = List(
-             List('A','R','A','G','A','A','A','R','V'), //posiciones del 0 al 8
-             List('A','R','G','O','R','M','N','A','R'),
-             List('A','R','O','O','R','O','N','A','R'),
-             List('V','R','O','O','A','R','A','V','A'),
-             List('A','O','G','O','R','M','N','A','R'),
-             List('A','A','A','G','A','A','A','R','V'),
-             List('N','A','A','G','A','A','A','R','V'),
-             List('A','M','G','O','R','O','N','A','R'),
-             List('A','A','A','G','A','A','A','R','V')
-             ) 
+             
    val pw = new BufferedWriter(new FileWriter("puntos.txt", true));
    val bf = new BufferedReader(new FileReader("puntos.txt"))
 
-  //Marina y Nicol
+  //Marina y Nicoleta
   def main(args: Array[String]) 
     {
     //MECANICA
+
     //Al comenzar la partida se llena el tablero con 9 bolas
-    val tableroLleno = llenar_tablero(0,9,tablero)
+    val tupla = llenar_tablero(0,9,tablero, 0)
+    val tableroLleno = tupla._1
     println("Tablero inicial: ")
     imprimir_tablero(tableroLleno)
-    //Se inicia el juego
-    jugar(tableroLleno, 0) 
-         
+    //Se inicia el juego -> tupla._2 son los puntos iniciales 
+    jugar(tableroLleno, tupla._2)
+     
     }
   
-  //Nicol
+   //Nicoleta y Marina
   def jugar(tablero: List[List[Char]], puntos: Int): List[List[Char]] =
   {
-
     if(esMiembro(tablero, 'O')) //Si quedan huecos libres
     { //Continua la partida
      val mov_recomendado: List[Any] = estrategia(tablero,colores,0,0,0,' ')
@@ -64,28 +53,51 @@ object optimizacion {
      val posNueva = elegirPosicion(tablero)
      val filaNueva = posNueva(0)
      val columnaNueva = posNueva(1)
-     //Se mueve la bola a la posicion indicada
+     //Se mueve la bola a la posición indicada
      val tablero2 = mover_bola(fila, columna, filaNueva ,columnaNueva, tablero)
      val color = tablero2(filaNueva)(columnaNueva)
-     val tablero3 = actualizar_tablero(filaNueva, columnaNueva, color , tablero2) //comprobar si se ha hecho alguna fila columna o diagonal de 5 y eliminar bolas
-     imprimir_tablero(tablero3) 
-     val puntos2 = get_puntos(filaNueva, columnaNueva, color , tablero2) + puntos //se actualiza el marcador con los puntos de esta ronda
-     println("PUNTOS: "+ puntos2) 
-     jugar(tablero3, puntos2) //se inicia otra ronda
-    
+     val aux = actualizar_tablero(filaNueva, columnaNueva, color , tablero2, puntos) //comprobar si se ha hecho alguna fila columna o diagonal de 5 y eliminar bolas
+     val tablero3 = aux._1
+     val puntos2 = aux._2 
+     //si no se ha hecho ninguna linea de 5 se meten 3 bolas aleatorias y se comprueba que con estas no se haya formado ninguna linea nueva
+     val actualizado = bolasExtra(tablero2, tablero3, puntos2)
+     val tablero4 = actualizado._1
+     val puntos3 = actualizado._2
+     imprimir_tablero(tablero4) 
+     println("PUNTOS: "+ puntos3) 
+     jugar(tablero4, puntos3) //se inicia otra ronda
+         
+     
     }
     else //Si no quedan huecos en el tablero se acaba la partida
     {
       println("Fin de la partida")
       println(tablero)
-      println("1:SALIR")
-      println("2:GUARDAR PUNTOS")
-      println("3:REINICIAR")
+      println("1: SALIR")
+      println("2: GUARDAR PUNTOS")
+      println("3: REINICIAR")
       val opcion = scala.io.StdIn.readInt()
       opcion_final(opcion, puntos)
       tablero
     }
   }
+   
+   
+  
+    //Marina
+  def bolasExtra(tablero1: List[List[Char]], tablero2: List[List[Char]], puntos: Int): (List[List[Char]], Int) = //comprueba si hay que añadir 3 bolas nuevas
+  {
+    if(tablero1 == tablero2) //si no se ha conseguido ninguna fila de 5
+    {
+      llenar_tablero(0,3,tablero1, puntos)
+    }
+    else //si no hay que añadirlas
+    {
+      (tablero2, puntos) //devuelve el tablero y los puntos como estaban
+    }
+  }
+  
+  //Nicoleta
  def opcion_final(opcion: Int, puntos: Int) //dependiendo de la opcion, cierra el juego, lo reinicia o guarda los puntos
   {
      opcion match {
@@ -113,7 +125,7 @@ object optimizacion {
     }
   }
   
-   //nicol
+   //Nicoleta
    def escribir(puntos: Int): Unit = {
 
     try
@@ -139,7 +151,7 @@ object optimizacion {
      }
 
    }
-   //Nicol
+   //Nicoleta
   def imprimir_tablero(tablero: List[List[Char]]){ //imprime el tablero con formato 
     
     if(!tablero.isEmpty)
@@ -154,7 +166,7 @@ object optimizacion {
     }
 
   }
-  //Nicol
+  //Nicoleta
   def imprimir_fila(fila: List[Char]){ //metodo auxiliar que imprime una fila
     if(!fila.isEmpty)
     {
@@ -170,27 +182,27 @@ object optimizacion {
 
   }
   
-  //marina
+  //Marina
   def insertar_aux (color: Char, pos: Int, tablero: List[Char]): List[Char] = { //inserta un char en una lista
     if (pos==0) color::tablero.tail
     else tablero.head::insertar_aux(color, pos-1, tablero.tail)
   } 
      
-  //marina 
+  //Marina 
   def insertar_aux2 (lista: List[Char], pos: Int, tablero: List[List[Char]]): List[List[Char]] = { //inserta una lista en el tablero
     if (pos==0) lista::tablero.tail
     else tablero.head::insertar_aux2(lista, pos-1, tablero.tail)
   } 
   
-  //marina
+  //Marina
   def insertar (color: Char, fila: Int, columna: Int, tablero: List[List[Char]]): List[List[Char]] = { 
     //actualiza el tablero dadas la fila y columna en las que se quiere insertar una bola y el color de esta
     val filaNueva:List[Char] = insertar_aux(color, columna, tablero(fila))
     insertar_aux2(filaNueva, fila, tablero) 
   }
 
-  //nicol y marina
-  def llenar_tablero(inicio: Int, numBolas: Int, tablero: List[List[Char]]): List[List[Char]] = { 
+   //Nicoleta y Marina
+  def llenar_tablero(inicio: Int, numBolas: Int, tablero: List[List[Char]], puntos: Int): (List[List[Char]], Int) = { 
     if(esMiembro(tablero, 'O'))
     {
        if (inicio < numBolas) //si todavia no se han metido el numero de bolas deseado
@@ -202,31 +214,36 @@ object optimizacion {
          if(tablero(fila)(columna) == 'O') //si la posicion aleatoria generada esta vacia
          {
            val aux = insertar(bola,fila,columna,tablero) //se introduce la bola en el tablero
-           llenar_tablero(inicio+1, numBolas, aux) //llamada recursiva para seguir introduciendo bolas
+           val tupla = actualizar_tablero(fila, columna, bola, aux, puntos)
+           val tablero2 = tupla._1
+           val puntos2 = tupla._2
+           llenar_tablero(inicio+1, numBolas, tablero2, puntos2) //llamada recursiva para seguir introduciendo bolas
          }
          else
          {
-           llenar_tablero(inicio, numBolas, tablero)
+           llenar_tablero(inicio, numBolas, tablero, puntos)
          }
        }
        else
        {
-         tablero //retorna el tablero 
+         (tablero, puntos) //retorna el tablero 
        }
      }
      else
      {
        println("NO QUEDAN HUECOS")
-       tablero
+       (tablero, puntos)
      }
    }
-   //marina
+  
+  
+   //Marina
    def mover_bola(filaIni: Int, columnaIni: Int, filaFin: Int ,columnaFin: Int, tablero: List[List[Char]]): List[List[Char]] = { //mueve bola de (filaIni, columnaIni) a (filaFin, columnaFin)
      val bola = tablero(filaIni)(columnaIni) //obtener bola que se quiere mover
      val aux = insertar(bola, filaFin, columnaFin, tablero) //insertar bola adecuada en posicion final
      insertar('O', filaIni, columnaIni, aux)   //vaciar posicion inicial
    }
-  //marina
+  //Marina
   def elegirBola(tablero: List[List[Char]]): List[Int] = //pide por consola la fila y la columna de la bola que se desea mover
   {
     try
@@ -302,7 +319,7 @@ object optimizacion {
      }
      
   }
-  //Nicol
+  //Nicoleta
   def esMiembro( lista: List[List[Char]], elem: Char): Boolean = { //comprueba si elem es miembro del tablero
     if(!lista.isEmpty)
     {
@@ -323,7 +340,7 @@ object optimizacion {
     }
   }
   
-  //Nicol
+  //Nicoleta
   def esMiembro_fila( lista: List[Char], elem: Char): Boolean = { //comprueba si elem es miembro de una fila
     if(!lista.isEmpty)
     {
@@ -344,7 +361,7 @@ object optimizacion {
   }
   
     
-   //NICOL y marina
+   //Nicoleta y Marina
   def elementos_fila_izq(fila: Int, columna: Int, color: Char,tablero: List[List[Char]],lista: List[List[Int]]):  List[List[Int]] = //saca una lista con las posiciones  consecutivas del mismo color, comprobando posiciones desde el color hacia la izquierda
   {
      if(columna > 0) //siempre y cuando la columna sea mayor que 0
@@ -366,7 +383,7 @@ object optimizacion {
      lista
      }
   }
-  //NICOL y marina
+  //Nicoleta y Marina
   def elementos_fila_drch(fila: Int, columna: Int, color: Char,tablero: List[List[Char]],lista: List[List[Int]]):  List[List[Int]] = 
   { //saca una lista con las posiciones  consecutivas del mismo color, comprobando posiciones desde el color hacia la derecha
      if(columna < 8)
@@ -388,7 +405,7 @@ object optimizacion {
      }
    }
 
-   //NICOL y marina 
+   //Nicoleta y Marina 
    def get_bolas_fila(fila: Int, columna: Int, color: Char,tablero: List[List[Char]],lista: List[List[Int]]):  List[List[Int]] = 
      //devuelve una lista con las fichas consecutivas del mismo color de una misma fila
    {
@@ -400,7 +417,7 @@ object optimizacion {
        listaConsecutivas
     }
 
-    //NICOL y marina
+    //Nicoleta y Marina
    def elementos_columna_arriba(fila: Int, columna: Int, color: Char,tablero: List[List[Char]],lista: List[List[Int]]):  List[List[Int]] = //saca una lista con las posiciones  consecutivas del mismo color, comprobando posiciones desde la posicion seleccionada hacia arriba
    {
      if(fila > 0) //si la fila no es la fila superior
@@ -423,7 +440,7 @@ object optimizacion {
      }
     
    }
-   //NICOL y marina
+   //Nicoleta y Marina
    def elementos_columna_abajo(fila: Int, columna: Int, color: Char,tablero: List[List[Char]],lista: List[List[Int]]):  List[List[Int]] = 
    { //saca una lista con las posiciones  consecutivas del mismo color, comprobando posiciones desde la posicion seleccionada hacia abajo
        if(fila < 8) //si la fila no es la fila inferior del tablero
@@ -445,7 +462,7 @@ object optimizacion {
        lista
      }
    }
-    //NICOL y marina
+    //Nicoleta y Marina
     def get_bolas_columna(fila: Int, columna: Int, color: Char,tablero: List[List[Char]],lista: List[List[Int]]):  List[List[Int]] = //devuelve una lista con las fichas consecutivas del mismo color de una misma columna
     {
        val elementos_abajo = elementos_columna_abajo(fila,columna,color,tablero,Nil)
@@ -455,7 +472,7 @@ object optimizacion {
        val listaConsecutivas = lista2 ++ elementos_arriba
        listaConsecutivas
      }
-    //NICOL
+    //Nicoleta
     def elementos_diagonal_abajo_drch2(fila: Int, columna: Int, color: Char,tablero: List[List[Char]],lista: List[List[Int]]):  List[List[Int]] = 
     { //2 diagonal que mira primero abajo y luego derecha
        if((fila < 8) && (columna < 8)) //se compruba que la fila es menor que 8 y la columna tambien
@@ -489,7 +506,7 @@ object optimizacion {
          lista
       }
     }
-    //NICOL
+    //Nicoleta
     def elementos_diagonal_abajo_drch1(fila: Int, columna: Int, color: Char,tablero: List[List[Char]],lista: List[List[Int]]):  List[List[Int]] = 
     { //1 diagonal que mira primero derecha y luego abajo
        if((fila < 8) && (columna < 8))
@@ -523,7 +540,7 @@ object optimizacion {
          lista
       }
     }
-    //NICOL
+    //Nicoleta
      def elementos_diagonal_arriba_drch2(fila: Int, columna: Int, color: Char,tablero: List[List[Char]],lista: List[List[Int]]):  List[List[Int]] = 
     { //2 diagonal que mira primero derecha y luego arriba
        if((fila > 0) && (columna < 8))
@@ -557,7 +574,7 @@ object optimizacion {
          lista
       }
     }
-    //marina
+    //Marina
     def elementos_diagonal_arriba_drch1(fila: Int, columna: Int, color: Char,tablero: List[List[Char]],lista: List[List[Int]]):  List[List[Int]] = 
     { //1 diagonal que mira primero arriba y luego derecha
        if((fila > 0) && (columna < 8))
@@ -591,7 +608,7 @@ object optimizacion {
          lista
       }
     }
-    //NICOL
+    //Nicoleta
     def elementos_diagonal_abajo_izq2(fila: Int, columna: Int, color: Char,tablero: List[List[Char]],lista: List[List[Int]]):  List[List[Int]] = //devuelve una lista con las posiciones de las bolas del mismo color que forman una diagonal (SEGUN EL PROFE)
     { //2 diagonal que mira primero abajo y luego izquierda
        
@@ -661,7 +678,7 @@ object optimizacion {
          lista
       }
     }
-    //NICOL
+    //Nicoleta
     def elementos_diagonal_arriba_izq2(fila: Int, columna: Int, color: Char,tablero: List[List[Char]],lista: List[List[Int]]):  List[List[Int]] = 
     {//2 diagonal que mira primero izquierda y luego arriba
         if((fila > 0) && (columna > 0))
@@ -731,7 +748,7 @@ object optimizacion {
       }
     }
     
-    //marina
+    //Marina
     def elegir_diagonalID(fila: Int, columna: Int, color: Char,tablero: List[List[Char]],lista: List[List[Int]]):  List[List[Int]] = //devuelve la diagonal de izquierda a derecha mas larga 
     {
        val diagonal_ID1 = elementos_diagonal_arriba_izq1(fila,columna,color,tablero,Nil) ++ elementos_diagonal_abajo_drch1(fila,columna,color,tablero,Nil)
@@ -746,7 +763,7 @@ object optimizacion {
        }
     }
     
-    //marina
+    //Marina
      def elegir_diagonalDI(fila: Int, columna: Int, color: Char,tablero: List[List[Char]],lista: List[List[Int]]):  List[List[Int]] = //devuelve la diagonal de derecha a izquierda mas larga
     {
        val diagonal_DI1 = elementos_diagonal_arriba_drch1(fila,columna,color,tablero,Nil) ++ elementos_diagonal_abajo_izq1(fila,columna,color,tablero,Nil)
@@ -762,7 +779,7 @@ object optimizacion {
        }
     }
     
-    //marina
+    //Marina
    def get_bolas_diagonal(fila: Int, columna: Int, color: Char,tablero: List[List[Char]],lista: List[List[Int]]):  List[List[Int]] = //en caso de que haya dos diagonales respecto a la misma bola se elige la mas larga
     {
        val diagonalDI = elegir_diagonalDI(fila, columna, color, tablero, Nil)
@@ -780,7 +797,7 @@ object optimizacion {
 
 
      } 
-  //marina
+  //Marina
   def pos_en_linea(linea: List[List[Int]], pos: List[Int]): Boolean = //comprueba si una posicion corresponde a una linea
   {
     if(!linea.isEmpty)
@@ -801,8 +818,8 @@ object optimizacion {
     }
   }
      
-  //NICOL
-  def eliminar_bolas(lista: List[List[Int]],tablero: List[List[Char]]): List[List[Char]] =
+   //Marina
+  def eliminar_bolas(lista: List[List[Int]],tablero: List[List[Char]], puntos: Int): (List[List[Char]], Int) =
     // dada una lista con las posiciones de bolas consecutivas del mismo color, sustituye dichas posiciones en el tablero por 0
   {
     if(!lista.isEmpty)
@@ -811,17 +828,17 @@ object optimizacion {
       val fila = posicion(0)
       val columna = posicion(1)
       val nuevo_tablero= insertar('O',fila,columna,tablero) //insertamos una O en esa posicion
-      eliminar_bolas(lista.tail,nuevo_tablero) //llamamos con el resto de la lista
+      eliminar_bolas(lista.tail,nuevo_tablero, puntos+75) //llamamos con el resto de la lista
     }
     else
     {
-      tablero
+      (tablero, puntos)
     }
    
   }
      
-  //MARINA y nicol
-  def actualizar_tablero(fila: Int, columna: Int, color: Char, tablero: List[List[Char]]):  List[List[Char]] =
+   //Marina y Nicoleta
+  def actualizar_tablero(fila: Int, columna: Int, color: Char, tablero: List[List[Char]], puntos: Int):  (List[List[Char]], Int) =
   {//actualiza el tablero tras realizarse un movimiento
     val consecutivasCol = get_bolas_columna(fila,columna,color,tablero,Nil) //obtenemos las bolas consecutivas que forman una columna a partir de la posicion indicada
     val consecutivasFila =  get_bolas_fila(fila, columna, color, tablero, Nil) //obtenemos las bolas consecutivas que forman una fila a partir de la posicion indicada
@@ -829,22 +846,23 @@ object optimizacion {
     
     if(consecutivasCol.length >= 5) //si hay mas de 5 bolas 
     { 
-      eliminar_bolas(consecutivasCol,tablero) //Se eliminan
+      eliminar_bolas(consecutivasCol,tablero, puntos) //Se eliminan
     }
     else if(consecutivasFila.length >= 5)
     { 
-      eliminar_bolas(consecutivasFila,tablero)
+      eliminar_bolas(consecutivasFila,tablero, puntos)
     }
     else if(consecutivasDiagonal.length >= 5)
     {
-      eliminar_bolas(consecutivasDiagonal,tablero)
+      eliminar_bolas(consecutivasDiagonal,tablero, puntos)
     }
-    else //si no se ha conseguido ninguna linea de 5 nueva
+    else
     {
-      llenar_tablero(0,3,tablero)  //se insertan 3 bolas nuevas en posiciones aleatorias
+          (tablero, puntos)
     }
   }
-  //marina
+  
+  //Marina
   def mejor_movimiento_tablero(fila: Int, columna: Int, color: Char, tablero: List[List[Char]], mejorFila: Int, mejorColumna: Int, tamano: Int ): List[Int] = 
   { //devuelve el mejor movimiento posible para una bola de un determinado color 
 
@@ -911,7 +929,7 @@ object optimizacion {
     }
 
   }
-  //nicol
+  //Nicoleta
   def estrategia(tablero: List[List[Char]], lista_colores: List[Char],fila: Int, columna: Int, tamano: Int, color: Char ): List[Any]=
   {//determina el mejor movimento posible indicando en que casilla y de que color colocar la bola
      if(!lista_colores.isEmpty) 
@@ -954,7 +972,7 @@ object optimizacion {
      }
 
   }
-  //nicol
+  //Nicoleta
   def eliminar_aux(elem: Char, izq: List[Char], drch: List[Char]): List[Char] = //metodo auxliar para eliminar un elementod e una lista
    { 
      if (Nil == drch) //si la lsita de la drch esta vacia
@@ -973,7 +991,7 @@ object optimizacion {
    { 
       eliminar_aux(elem, Nil, lista) 
    }
-  //marina y Nicol 
+  //Marina y Nicoleta 
   def comparador_listas(lista1: List[List[Int]], lista2: List[List[Int]],lista3: List[List[Int]]): List[List[Int]] = //compara la longitud de 3 listas y devuelve la mas grande
   {
     
@@ -1008,36 +1026,7 @@ object optimizacion {
     }
   }
 
-  //marina
-  def get_puntos(fila: Int, columna: Int, color: Char, tablero: List[List[Char]]): Int =
-  { //obtiene los puntos en funcion de las bolas eliminadas
-     val consecutivasCol = get_bolas_columna(fila,columna,color,tablero,Nil) //obtenemos las bolas consecutivas que forman una columna a partir de la posicion indicada
-    val consecutivasFila =  get_bolas_fila(fila, columna, color, tablero, Nil) //obtenemos las bolas consecutivas que forman una fila a partir de la posicion indicada
-    val consecutivasDiagonal = get_bolas_diagonal(fila, columna, color, tablero, Nil) //obtenemos las bolas consecutivas que forman una diagonal a partir de la posicion indicada
-    
-    if(consecutivasCol.length >= 5) //si hay mas de 5 bolas 
-    { 
-      val puntos = consecutivasCol.length * 75 //multiplicamos el numero de bolas eliminadas por 75
-      puntos
-
-    }
-    else if(consecutivasFila.length >= 5)
-    { 
-      val puntos = consecutivasFila.length * 75
-      puntos
-    }
-    else if(consecutivasDiagonal.length >= 5)
-    {
-      val puntos = consecutivasDiagonal.length * 75
-      puntos
-    }
-    else //si no se ha conseguido ninguna linea de 5 nueva
-    {
-      0 //supone 0 puntos ganados
-    }
-     
-  }
-  //nicol
+  //Nicoleta
    def contar_fichas_color(tablero: List[List[Char]], color: Char, contador: Int): Int = 
     //cuenta las fichas de un color que hay en el tablero
   {
@@ -1053,7 +1042,7 @@ object optimizacion {
     }
     
   }
-   //nicol
+   //Nicoleta
   def contar_fichas_color_fila(fila: List[Char], color: Char, contador: Int): Int={
     //cuenta las bolas de un color de una fila
     if(!fila.isEmpty)
